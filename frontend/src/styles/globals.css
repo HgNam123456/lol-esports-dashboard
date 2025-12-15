@@ -1,0 +1,243 @@
+/* placeholder */
+/* frontend/src/styles/globals.css */
+
+:root {
+  --bg: #0f172a;
+  --bg-alt: #020617;
+  --card-bg: #020617;
+  --card-border: #1e293b;
+  --text: #e5e7eb;
+  --text-muted: #9ca3af;
+  --accent: #6366f1;
+  --accent-soft: #4f46e5;
+  --danger: #f97316;
+  --radius-card: 0.75rem;
+  --shadow-card: 0 10px 15px -3px rgba(15, 23, 42, 0.8);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+/* Layout */
+
+.app {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 260px;
+  background: radial-gradient(circle at top, #1f2937 0, #020617 55%);
+  border-right: 1px solid #111827;
+  padding: 1.5rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.sidebar-logo {
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: 0.05em;
+  color: #e5e7eb;
+}
+
+.sidebar-nav a {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.95rem;
+  margin-bottom: 0.25rem;
+}
+
+.sidebar-nav a.active {
+  background: rgba(99, 102, 241, 0.15);
+  color: var(--accent);
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: radial-gradient(circle at top, #020617 0, #020617 40%, #020617 100%);
+}
+
+.navbar {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #111827;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.navbar-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.content {
+  padding: 1.5rem;
+}
+
+/* Grid sections */
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Cards */
+
+.kpi-card {
+  background: radial-gradient(circle at top left, #1f2937 0, #020617 70%);
+  border-radius: var(--radius-card);
+  border: 1px solid var(--card-border);
+  padding: 1rem 1.2rem;
+  box-shadow: var(--shadow-card);
+}
+
+.kpi-title {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+.kpi-value {
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin-top: 0.3rem;
+}
+
+.kpi-subtitle {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+/* Table */
+
+.table-wrapper {
+  border-radius: var(--radius-card);
+  border: 1px solid var(--card-border);
+  overflow: hidden;
+  background: var(--card-bg);
+  box-shadow: var(--shadow-card);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.data-table thead {
+  background: #020617;
+}
+
+.data-table th,
+.data-table td {
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid #111827;
+}
+
+.data-table th {
+  font-weight: 500;
+  text-align: left;
+  color: var(--text-muted);
+}
+
+.data-table tbody tr:hover {
+  background: rgba(15, 23, 42, 0.8);
+}
+
+/* Page wrappers */
+
+.overview-page,
+.player-stats-page,
+.team-stats-page,
+.champion-stats-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Small utilities */
+
+input[type="text"],
+input[type="search"] {
+  background: #020617;
+  border-radius: 0.5rem;
+  border: 1px solid #1f2937;
+  padding: 0.45rem 0.7rem;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+input[type="text"]::placeholder,
+input[type="search"]::placeholder {
+  color: var(--text-muted);
+}
+
+h2,
+h3,
+h4 {
+  margin: 0 0 0.75rem;
+}
+
+
+/* frontend/src/styles/globals.css */
+
+.player-search {
+  position: relative;
+  max-width: 260px; /* hoặc rộng hơn tuỳ bạn */
+}
+
+.player-search-results {
+  position: absolute;
+  top: 110%;          /* ngay dưới input */
+  left: 0;
+  right: 0;
+  background: #020617;
+  border: 1px solid #1f2937;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+  padding: 0.25rem;
+}
+
+.player-search-results button {
+  width: 100%;
+  text-align: left;
+  padding: 0.4rem 0.6rem;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.player-search-results button:hover {
+  background: rgba(148, 163, 184, 0.12);
+}

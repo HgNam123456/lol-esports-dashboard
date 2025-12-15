@@ -1,0 +1,52 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pkl
+*.log
+
+# Virtual env
+venv/
+.env/
+.venv/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Data
+pipeline/data/raw/
+pipeline/data/intermediate/
+backend/data/processed/
+
+# Local config
+*.local.*
+*.env
+.env.*
+
+# Node / React
+node_modules/
+frontend/node_modules/
+*.tsbuildinfo
+
+# Build outputs
+dist/
+build/
+frontend/dist/
+frontend/build/
+
+# IDE / Editor
+.vscode/
+.idea/
+*.iml
+
+# Misc
+coverage/
+htmlcov/
+pytest_cache/
+.cache/
