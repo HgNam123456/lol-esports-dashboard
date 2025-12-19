@@ -1,93 +1,129 @@
-# lol-esports-dashboard
 # LoL Esports Dashboard
 
-Dashboard phân tích dữ liệu Liên Minh Huyền Thoại (LoL Esports) với pipeline xử lý dữ liệu, backend API và frontend React.  
-Mục tiêu:
-
-- Trực quan hóa thống kê tổng quan giải đấu (matches, players, teams, champions, winrate Blue/Red).
-- Phân tích hiệu suất theo team, player, champion.
-- Khai thác luật kết hợp (synergy rules) như Mid–Jungle, Bot–Support.
+> **Dashboard phân tích dữ liệu Liên Minh Huyền Thoại (LoL Esports)**  
+> Hệ thống phân tích chuyên sâu với pipeline xử lý dữ liệu, backend API và frontend React hiện đại.
 
 ---
 
-## 1. Kiến trúc tổng thể
+## 👥 Thành viên nhóm 5
 
-Project gồm ba phần chính:
-
-- **pipeline/** – Notebook + script Python để xử lý dữ liệu raw và export các file Parquet cho backend.
-- **backend/** – FastAPI đọc Parquet, cung cấp REST API cho frontend.
-- **frontend/** – React + TypeScript hiển thị dashboard, charts và tables.
-
-Luồng dữ liệu:
-
-1. Raw CSV/Parquet từ Oracles Elixir được đặt trong `pipeline/data/raw/`.
-2. Notebook trong `pipeline/notebooks/` xử lý, làm sạch, feature engineering, tìm association rules.
-3. `export_data.py` sinh ra các Parquet cuối cùng trong `backend/data/processed/`.
-4. Backend load các Parquet (qua `utils/loaders.py`), build các service và expose API (`/overview`, `/teams/...`, `/players/...`, `/champions/...`).
-5. Frontend gọi API qua `src/services/apiClient.ts` và render thành các page: Overview, Players, Teams, Champions.
+| STT | Họ và Tên | Mã sinh viên |
+|-----|-----------|--------------|
+| 1 | Nguyễn Văn Huy | 23020379 |
+| 2 | Hoàng Ngọc Nam | 23020403 |
+| 3 | Trần Quốc Khánh | 23020387 |
+| 4 | Nguyễn Anh Kiệt | 23020383 |
 
 ---
 
-## 2. Cấu trúc thư mục
+## 📋 Tổng quan dự án
 
-project2
+Dashboard chuyên nghiệp phân tích dữ liệu thi đấu Liên Minh Huyền Thoại, cung cấp insights sâu sắc về:
 
+- **Thống kê tổng quan**: Phân tích matches, players, teams, champions với winrate Blue/Red side
+- **Hiệu suất chi tiết**: Đánh giá performance theo team, player và champion
+- **Synergy Analysis**: Khai thác luật kết hợp (association rules) cho các lane combo như Mid–Jungle, Bot–Support
+- **Trực quan hóa dữ liệu**: Charts và graphs tương tác với Nivo, Recharts và Force Graph
+
+---
+
+## 🏗️ Kiến trúc hệ thống
+
+### Tech Stack
+
+**Backend:**
+- FastAPI 0.115.0
+- Pandas 2.2.3 + PyArrow 17.0.0
+- Pydantic 2.9.2
+- Uvicorn 0.30.6
+- CacheTools 5.5.0
+
+**Frontend:**
+- React 19.2.3
+- TypeScript 5.9.3
+- Vite 7.2.7
+- React Router 7.10.1
+- Axios 1.13.2
+- TailwindCSS 4.1.18
+- Nivo Charts (@nivo/bar, @nivo/pie, @nivo/line, @nivo/radar, @nivo/network)
+- Recharts 3.6.0
+- React Force Graph 2D 1.29.0
+
+**Data Pipeline:**
+- Python với Jupyter Notebook
+- Pandas, NumPy
+- PyArrow (Parquet format)
+
+### Kiến trúc tổng thể
+
+```
+┌─────────────────┐      ┌──────────────────┐      ┌─────────────────┐
+│   Pipeline      │ ───> │    Backend       │ ───> │    Frontend     │
+│   (Jupyter)     │      │    (FastAPI)     │      │    (React)      │
+└─────────────────┘      └──────────────────┘      └─────────────────┘
+       │                         │                         │
+   CSV/Parquet            Parquet Files              REST API
+   Processing              Loading                  Visualization
+```
+
+### Luồng dữ liệu:
+
+1. **Nguồn dữ liệu**: CSV raw từ Oracles Elixir (`pipeline/notebooks/2025_LoL_esports_match_data_from_OraclesElixir.csv`)
+2. **Xử lý dữ liệu**: Notebook `01_data_cleaning.ipynb` làm sạch, chuẩn hóa, feature engineering
+3. **Export**: Script `export_data.py` sinh các file Parquet cho backend (players, teams, champions, rules)
+4. **Backend**: FastAPI load Parquet qua `app/utils/loaders.py`, expose REST API
+5. **Frontend**: React components gọi API qua `apiClient.ts` và render charts/tables
+
+---
+
+## 📁 Cấu trúc thư mục
+
+```
 lol-esports-dashboard/
-│
 ├── pipeline/
-│   ├── data/
-│   │   ├── raw/                # CSV/Parquet gốc từ Oracles Elixir
-│   │   ├── intermediate/       # file tạm trong quá trình xử lý
-│   │   └── processed/          # output cuối, dùng cho debug
-│   │
 │   ├── notebooks/
 │   │   ├── 01_data_cleaning.ipynb
-│   │   ├── 02_feature_engineering.ipynb
-│   │   └── 03_association_rules.ipynb
-│   │
-│   ├── export_data.py          # script tách từ .ipynb → file cho backend
-│   └── requirements.txt
+│   │   └── 2025_LoL_esports_match_data_from_OraclesElixir.csv
+│   └── export_data.py
 │
 ├── backend/
 │   ├── app/
-│   │   ├── api/
-│   │   │   ├── overview.py
-│   │   │   ├── players.py
-│   │   │   ├── teams.py
-│   │   │   └── champions.py
-│   │   │
-│   │   ├── services/
+│   │   ├── main.py                 # FastAPI app entry point
+│   │   ├── api/                    # API endpoints
+│   │   │   ├── overview.py         # GET /overview, /overview/champions
+│   │   │   ├── players.py          # GET /players/*
+│   │   │   ├── teams.py            # GET /teams/*
+│   │   │   └── champions.py        # GET /champions/associations
+│   │   ├── services/               # Business logic
 │   │   │   ├── overview_service.py
 │   │   │   ├── players_service.py
 │   │   │   ├── teams_service.py
 │   │   │   └── champions_service.py
-│   │   │
-│   │   ├── schemas/
+│   │   ├── schemas/                # Pydantic models
 │   │   │   ├── common.py
 │   │   │   ├── overview.py
 │   │   │   ├── players.py
 │   │   │   ├── teams.py
 │   │   │   └── champions.py
-│   │   │
 │   │   ├── core/
-│   │   │   ├── config.py       # config path, cache TTL, CORS, ...
-│   │   │   └── cache.py        # layer cache in‑memory
-│   │   │
-│   │   ├── utils/
-│   │   │   └── loaders.py      # hàm đọc Parquet/CSV/JSON từ data/processed
-│   │   │
-│   │   └── main.py
-│   │
+│   │   │   ├── config.py           # Settings (DATA_DIR, CACHE_TTL)
+│   │   │   └── cache.py
+│   │   └── utils/
+│   │       └── loaders.py          # @lru_cache Parquet loaders
 │   ├── data/
-│   │   └── processed/          # players.parquet, teams.parquet, rules_*.parquet, ...
-│   │
+│   │   └── processed/              # *.parquet files (tạo từ pipeline)
+│   ├── tests/
+│   │   ├── conftest.py
+│   │   ├── test_champions_service.py
+│   │   └── test_teams_service.py
 │   ├── Dockerfile
-│   └── requirements.txt
+│   ├── requirements.txt
+│   └── package.json
 │
 ├── frontend/
-│   ├── public/
-│   │   └── logo.png
 │   ├── src/
+│   │   ├── main.tsx                # App entry point
+│   │   ├── router.tsx              # React Router config
 │   │   ├── layouts/
 │   │   │   └── DashboardLayout.tsx
 │   │   ├── pages/
@@ -96,7 +132,7 @@ lol-esports-dashboard/
 │   │   │   ├── TeamStatsPage.tsx
 │   │   │   └── ChampionStatsPage.tsx
 │   │   ├── components/
-│   │   │   ├── common/
+│   │   │   ├── common/             # Reusable components
 │   │   │   │   ├── Sidebar.tsx
 │   │   │   │   ├── Navbar.tsx
 │   │   │   │   ├── KPICard.tsx
@@ -104,163 +140,31 @@ lol-esports-dashboard/
 │   │   │   ├── overview/
 │   │   │   │   ├── OverviewKPISection.tsx
 │   │   │   │   └── OverviewChartsSection.tsx
-│   │   │   ├── players/
-│   │   │   │   ├── PlayerSearchBar.tsx
-│   │   │   │   ├── PlayerProfileCard.tsx
-│   │   │   │   ├── PlayerChampionsChart.tsx
-│   │   │   │   └── PlayerRulesSection.tsx
-│   │   │   ├── teams/
-│   │   │   └── champions/
-│   │   ├── charts/
+│   │   │   └── players/
+│   │   │       ├── PlayerSearchBar.tsx
+│   │   │       ├── PlayerProfileCard.tsx
+│   │   │       ├── PlayerChampionsChart.tsx
+│   │   │       └── PlayerRulesSection.tsx
+│   │   ├── charts/                 # Chart wrappers
 │   │   │   ├── BarChart.tsx
 │   │   │   ├── PieChart.tsx
 │   │   │   ├── RadarChart.tsx
 │   │   │   ├── LineChart.tsx
-│   │   │   └── NetworkGraph.tsx
+│   │   │   ├── StackedBarChart.tsx
+│   │   │   ├── NetworkGraph.tsx
+│   │   │   └── ChampionScatterChart.tsx
 │   │   ├── services/
-│   │   │   └── apiClient.ts
-│   │   ├── styles/
-│   │   │   ├── theme.ts
-│   │   │   └── globals.css
-│   │   ├── main.tsx
-│   │   └── router.tsx
-│   │
+│   │   │   └── apiClient.ts        # Axios config
+│   │   └── styles/
+│   │       ├── globals.css
+│   │       └── theme.ts
+│   ├── index.html
 │   ├── Dockerfile
 │   └── package.json
 │
 ├── docker-compose.yml
 └── README.md
-
-Dưới đây là README.md đầy đủ bạn có thể copy thẳng vào project.
-
-text
-# LoL Esports Dashboard
-
-Dashboard phân tích dữ liệu Liên Minh Huyền Thoại (LoL Esports) với pipeline xử lý dữ liệu, backend API và frontend React.  
-Mục tiêu:
-
-- Trực quan hóa thống kê tổng quan giải đấu (matches, players, teams, champions, winrate Blue/Red).
-- Phân tích hiệu suất theo team, player, champion.
-- Khai thác luật kết hợp (synergy rules) như Mid–Jungle, Bot–Support.
-
----
-
-## 1. Kiến trúc tổng thể
-
-Project gồm ba phần chính:
-
-- **pipeline/** – Notebook + script Python để xử lý dữ liệu raw và export các file Parquet cho backend.
-- **backend/** – FastAPI đọc Parquet, cung cấp REST API cho frontend.
-- **frontend/** – React + TypeScript hiển thị dashboard, charts và tables.
-
-Luồng dữ liệu:
-
-1. Raw CSV/Parquet từ Oracles Elixir được đặt trong `pipeline/data/raw/`.
-2. Notebook trong `pipeline/notebooks/` xử lý, làm sạch, feature engineering, tìm association rules.
-3. `export_data.py` sinh ra các Parquet cuối cùng trong `backend/data/processed/`.
-4. Backend load các Parquet (qua `utils/loaders.py`), build các service và expose API (`/overview`, `/teams/...`, `/players/...`, `/champions/...`).
-5. Frontend gọi API qua `src/services/apiClient.ts` và render thành các page: Overview, Players, Teams, Champions.
-
----
-
-## 2. Cấu trúc thư mục
-
-project2/
-└── lol-esports-dashboard/
-├── pipeline/
-│ ├── data/
-│ │ ├── raw/ # CSV/Parquet gốc từ Oracles Elixir
-│ │ ├── intermediate/ # file tạm trong quá trình xử lý (debug, join, vv.)
-│ │ └── processed/ # output cuối dùng cho debug pipeline
-│ │
-│ ├── notebooks/
-│ │ ├── 01_data_cleaning.ipynb
-│ │ ├── 02_feature_engineering.ipynb
-│ │ └── 03_association_rules.ipynb
-│ │
-│ ├── export_data.py # script tách logic từ notebooks, export Parquet cho backend
-│ └── requirements.txt
-│
-├── backend/
-│ ├── app/
-│ │ ├── api/
-│ │ │ ├── overview.py
-│ │ │ ├── players.py
-│ │ │ ├── teams.py
-│ │ │ └── champions.py
-│ │ │
-│ │ ├── services/
-│ │ │ ├── overview_service.py
-│ │ │ ├── players_service.py
-│ │ │ ├── teams_service.py
-│ │ │ └── champions_service.py
-│ │ │
-│ │ ├── schemas/
-│ │ │ ├── common.py
-│ │ │ ├── overview.py
-│ │ │ ├── players.py
-│ │ │ ├── teams.py
-│ │ │ └── champions.py
-│ │ │
-│ │ ├── core/
-│ │ │ ├── config.py # config path DATA_DIR, CORS, v.v.
-│ │ │ └── cache.py # cache in‑memory (LRU/TTL)
-│ │ │
-│ │ ├── utils/
-│ │ │ └── loaders.py # hàm đọc Parquet từ backend/data/processed
-│ │ │
-│ │ └── main.py # tạo FastAPI app, CORS, include routers
-│ │
-│ ├── data/
-│ │ └── processed/ # players.parquet, teams.parquet, rules_*.parquet, ...
-│ │
-│ ├── Dockerfile
-│ └── requirements.txt
-│
-├── frontend/
-│ ├── public/
-│ │ └── logo.png
-│ ├── src/
-│ │ ├── layouts/
-│ │ │ └── DashboardLayout.tsx
-│ │ ├── pages/
-│ │ │ ├── OverviewPage.tsx
-│ │ │ ├── PlayerStatsPage.tsx
-│ │ │ ├── TeamStatsPage.tsx
-│ │ │ └── ChampionStatsPage.tsx
-│ │ ├── components/
-│ │ │ ├── common/
-│ │ │ │ ├── Sidebar.tsx
-│ │ │ │ ├── Navbar.tsx
-│ │ │ │ ├── KPICard.tsx
-│ │ │ │ └── DataTable.tsx
-│ │ │ ├── overview/
-│ │ │ │ ├── OverviewKPISection.tsx
-│ │ │ │ └── OverviewChartsSection.tsx
-│ │ │ ├── players/
-│ │ │ ├── teams/
-│ │ │ └── champions/
-│ │ ├── charts/
-│ │ │ ├── BarChart.tsx
-│ │ │ ├── PieChart.tsx
-│ │ │ ├── RadarChart.tsx
-│ │ │ ├── LineChart.tsx
-│ │ │ └── NetworkGraph.tsx
-│ │ ├── services/
-│ │ │ └── apiClient.ts
-│ │ ├── styles/
-│ │ │ ├── theme.ts
-│ │ │ └── globals.css
-│ │ ├── main.tsx
-│ │ └── router.tsx
-│ │
-│ ├── Dockerfile
-│ └── package.json
-│
-├── docker-compose.yml
-└── README.md
-
-text
+```
 
 ---
 
@@ -493,29 +397,114 @@ text
 - `ChampionScatterChart.tsx` – scatter chart dùng Recharts, custom tooltip.
 
 ---
+---
 
-## 6. Chạy toàn bộ bằng Docker (nếu dùng)
+## 🚀 Hướng dẫn cài đặt và chạy
 
-Nếu đã cấu hình `Dockerfile` cho backend/frontend và `docker-compose.yml`:
+### 1. Pipeline - Xử lý dữ liệu
 
-docker-compose up --build
+**Yêu cầu:** Python 3.11+, Jupyter Notebook
 
-text
+```bash
+cd pipeline
+python -m venv venv
+venv\Scripts\activate  # Windows
 
-- Backend: `http://localhost:8000`  
-- Frontend: `http://localhost:5173` (hoặc port cấu hình trong compose)
+pip install pandas numpy pyarrow jupyter mlxtend
+jupyter notebook
+# Chạy 01_data_cleaning.ipynb
+```
+
+**Output:** Tạo file Parquet trong `backend/data/processed/`
 
 ---
 
-## 7. Ghi chú & mở rộng
+### 2. Backend - FastAPI
 
-- Có thể thêm filter theo giải (LCK, LPL, Worlds) hoặc theo năm ngay từ pipeline để giảm dung lượng.  
-- Có thể tối ưu phần đọc Parquet bằng cache TTL hoặc load lazy.  
-- Có thể thêm metric mới: gold diff @10, vision score, champion ban rate, v.v.  
-- Frontend có thể bổ sung:
-  - Sort & filter trên bảng champion / match.  
-  - Tooltip giải thích ý nghĩa `support`, `confidence`, `lift` trên synergy rules.  
-- Khi update dữ liệu:
-  1. Bỏ file raw mới vào `pipeline/data/raw/`.  
-  2. Chạy lại notebooks / `export_data.py`.  
-  3. Restart backend (để reload Parquet).
+**Yêu cầu:** Python 3.11+, File Parquet từ pipeline
+
+```bash
+cd backend
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+
+# Chạy server
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+**API Docs:** `http://localhost:8000/docs`
+
+---
+
+### 3. Frontend - React + Vite
+
+**Yêu cầu:** Node.js 20+
+
+```bash
+cd frontend
+npm install
+
+# Tạo .env
+echo VITE_API_BASE_URL=http://localhost:8000 > .env
+
+npm run dev  # http://localhost:5173
+```
+
+---
+
+### 4. Docker (Optional)
+
+```bash
+docker-compose up --build
+```
+
+---
+
+## 📊 Tính năng Dashboard
+
+### Overview Page (`/`)
+- KPI Cards: Matches, Players, Teams, Champions
+- Charts: Blue/Red winrate, Champion rankings
+
+### Player Stats (`/players`)
+- Search & Profile
+- Champion performance
+- Lane synergy rules
+
+### Team Stats (`/teams`)
+- Team details & objectives
+- Match history
+- Champion scatter plot
+
+### Champion Stats (`/champions`)
+- Network graph (Mid-Jungle, Bot-Support synergy)
+- First blood & gold diff analysis
+- Association rules table
+
+---
+
+## 🛠️ Tech Stack
+
+**Backend:** FastAPI, Pandas, PyArrow, Pydantic  
+**Frontend:** React 19, TypeScript, Vite, TailwindCSS, Nivo, Recharts  
+**Data:** Jupyter, Pandas, MLxtend
+
+---
+
+## 💡 Mở rộng
+
+- Filter theo giải đấu (LCK, LPL, Worlds)
+- Thêm metrics: gold diff @10, vision score, ban rate
+- Cải thiện caching và lazy loading
+- Sort & filter tables
+- Tooltips giải thích metrics
+
+---
+
+## 📝 License & Credits
+
+**Data Source:** [Oracle's Elixir](https://oracleselixir.com/)  
+**Project:** LoL Esports Analytics Dashboard  
+**Team:** Nhóm 5 - Data Science Project
+
